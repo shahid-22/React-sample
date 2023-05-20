@@ -1,0 +1,20 @@
+.main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  .card {
+    width: 500px;
+    text-align: center;
+    box-shadow: 2px 4px 10px rgb(247, 244, 244);
+  }
+  
+  .card-title {
+    padding: 60px;
+    color: greenyellow;
+    font-weight: bolder;
+    font-size: larger;
+  }
+  
