@@ -3,13 +3,32 @@ import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import './signup.css';
 import {useForm} from "react-hook-form"
 import {useNavigate} from "react-router-dom"
+import {RegisterUser} from '../../apicalls/users'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Signup() {
   const navigate=useNavigate()
-  const {register, handleSubmit, formState:{errors}, watch} = useForm();
+  const {register, handleSubmit, formState:{errors}, watch,reset} = useForm();
 
-  const submit=(data)=>{
-    console.log(data);
+  const submit=async(data)=>{
+    try{
+      const response= await RegisterUser(data)
+
+      if(response.success){
+        toast.success(response.message);
+           setTimeout(()=>{
+            navigate('/login');
+           }, 2000);
+      }else{
+
+         throw new Error(response.message);
+      }
+
+    }catch(err){
+      toast.error(err.message);
+            reset();
+  }
   }
   return (
     <Container>
@@ -36,6 +55,7 @@ function Signup() {
                   Sign In
                 </Button>
               </Form>
+              <ToastContainer />
             <p onClick={()=>{navigate('/login')}} className='ps-3 pb-2'>already have an account ? <span style={{color: '#4d79ff', fontWeight: 'bold', cursor: 'pointer'}}>login</span></p>
             </div>
             <div className="col-2">

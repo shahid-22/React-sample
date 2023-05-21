@@ -1,6 +1,33 @@
 import React from 'react'
+import {useNavigate} from 'react-router-dom'
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import {useForm} from 'react-hook-form'
+import {LoginUser} from "../../apicalls/users"
+import { ToastContainer } from 'react-toastify'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function Login() {
+  const navigate=useNavigate()
+  const {register, handleSubmit,formState:{errors},}  = useForm();
+  const onsubmit=async (data)=>{
+    try{
+
+    
+    console.log(data);
+    const response=await LoginUser(data)
+    console.log(response,'response');
+    if(response.success){
+      toast.success(response.message);
+      localStorage.setItem('token', JSON.stringify(response.data));
+      setTimeout(()=>{
+        navigate('/');
+       }, 2000);
+    }
+      else throw new Error(response.message);
+  }catch(err){
+    toast.error(err.message);
+  }
+  }
   return (
     <Container>
       <Row>
@@ -10,16 +37,17 @@ function Login() {
               <h2 style={{color:"black" ,fontStyle:"italic"}}>Login</h2>
               <span></span>
 
-              <Form id="form" className="flex flex-col">
-                <Form.Control type="text" placeholder="e-mail" />
-                <Form.Control type="password" placeholder="password" />
+              <Form  onSubmit={handleSubmit(onsubmit)} id="form" className="flex flex-col">
+                <Form.Control type="text" {...register("email", {required:true})} placeholder="e-mail" />
+                {errors.email && <span  style={{color:'red'}}>This field is required</span>}
+                <Form.Control type="password" {...register("password", {required:true})}  placeholder="password" />
+                {errors.password&&<span  style={{color:'red'}}>This fiield required,at least 8 characters </span>}
                 <Button className="btn" variant="primary" type="submit">
                   LOGIN
                 </Button>
-                <Button className="btn" variant="primary" type="submit">
-                  Sign In
-                </Button>
               </Form>
+              <ToastContainer />
+              <p onClick={()=>{navigate('/signup')}} className='ps-3 pb-2'>create account ? <span style={{color: '#4d79ff', fontWeight: 'bold', cursor: 'pointer'}}>signup</span></p>
             </div>
             <div className="col-2">
               <img
