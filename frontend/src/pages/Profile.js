@@ -1,15 +1,37 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import Navbar from '../components/Navbar/navbar'
 import "./profile.css"
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {useForm} from "react-hook-form"
-import { updateProfile,profileUpload} from '../apicalls/users'
+import { updateProfile,profileUpload, GetCurrentUser} from '../apicalls/users'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { usersFetchFailure, usersFetchSuccess } from '../redux/users/usersAction'
+import {useNavigate} from 'react-router-dom'
+
 
 
 function Profile() {
+  const dispatch=useDispatch()
+  const navigate=useNavigate()
   const { handleSubmit, register, formState: { errors } } = useForm();
+  
+   const getuser=async()=>{
+    try{
+      const response=await GetCurrentUser();
+      if(response.success){
+        dispatch(usersFetchSuccess(response.data))
+      }else{
+        dispatch(usersFetchFailure(response.message))
+        throw new Error(response.message);
+      }
+    }catch(err){
+      dispatch(usersFetchFailure());
+      toast.error(err.message);
+      navigate('/login');
+    }
+   }
+
   const user=useSelector(value=>value.users.users)
   const [profilePic, setProfilePic] = useState(user.profilePic);
   const [name,setname]=useState(user.name)
@@ -59,6 +81,31 @@ const [postcode, setPostcode] = useState(() => {
         toast.error(err.message)
       }
   }
+
+    useEffect(()=>{
+      getuser();
+    
+    },[]);
+
+    useEffect(()=>{
+      setProfilePic(user.profilePic);
+            setname(user.name);
+            setemail(user.email);
+            setMobile(user.mobile);
+            setaddress(() => {
+                if (user.address) return user.address.address;
+                else return null
+            });
+            setState(()=> {
+                if (user.address) return user.address.state;
+                else return null
+            });
+            setPostcode(() => {
+                if (user.address) return user.address.postcode;
+                else return null
+            });
+    },[user]);
+
   return (
     <>
     {/* Include the Bootstrap CSS */}
@@ -124,8 +171,8 @@ const [postcode, setPostcode] = useState(() => {
               </div>
             </div>
             <div className="row mt-3">
-                    <div className="col-md-6"><label  className="labels">Country</label><input type="text" {...register("country")}  className="form-control" placeholder="country"/></div>
-                    <div className="col-md-6"><label  className="labels">State/Region</label><input type="text" {...register("state")}  className="form-control"  placeholder="state" value={state} onChange={(e) => setState(e.target.value)} /></div>
+                    {/* <div className="col-md-6"><label  className="labels">Country</label><input type="text" {...register("country")}  className="form-control" placeholder="country"/></div> */}
+                    <div className="col-md-12"><label  className="labels">State/Region</label><input type="text" {...register("state")}  className="form-control"  placeholder="state" value={state} onChange={(e) => setState(e.target.value)} /></div>
                 </div>
                 <div className="mt-5 text-center"><button className="btn btn-primary profile-button" type="submit">Save Profile</button></div>
               <ToastContainer/>
