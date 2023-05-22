@@ -1,6 +1,7 @@
 const bcrypt =require('bcrypt')
 const User=require('../models/userModels')
 const jwt = require('jsonwebtoken');
+const cloudinary=require('../config/cloudinaryconfig')
 module.exports={
     userSignup: async (req ,res) => {
         try{
@@ -82,6 +83,32 @@ module.exports={
                     });
                 })
                 .catch((err) => {
+                    throw new Error(err.message);
+                })
+        } catch (err) {
+            res.send({
+                success: false,
+                message: err.message
+            });
+        }
+    },
+    uploadProfilepic:async(req,res)=>{
+        try {
+            const result = await cloudinary.uploader.upload(req.file.path);
+            const imageUrl = result.url
+            User.updateOne({
+                _id: req.body.userId
+            }, {
+                profilePic: imageUrl
+            })
+                .then(() => {
+                    res.send({
+                        success: true,
+                        message: "profile picture uploaded successfully",
+                        data: imageUrl
+                    });
+                })
+                .catch((err)=>{
                     throw new Error(err.message);
                 })
         } catch (err) {

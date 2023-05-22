@@ -40,3 +40,17 @@ export const updateProfile=async (payload)=>{
         return err.message
     }
 }
+
+export const profileUpload = async (payload) => {
+    try {
+        console.log(payload);
+        const response = await axiosInstance.post('/api/users/profilepic-upload', payload, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        return response.data;
+    } catch (err) {
+        return err.message;
+    }
+}

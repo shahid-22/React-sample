@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar/navbar'
 import "./profile.css"
 import { useSelector } from 'react-redux'
 import {useForm} from "react-hook-form"
-import { updateProfile } from '../apicalls/users'
+import { updateProfile,profileUpload} from '../apicalls/users'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 function Profile() {
   const { handleSubmit, register, formState: { errors } } = useForm();
   const user=useSelector(value=>value.users.users)
+  const [profilePic, setProfilePic] = useState(user.profilePic);
   const [name,setname]=useState(user.name)
   const [email,setemail]=useState(user.email)
   const [mobile, setMobile] = useState(user.mobile);
@@ -26,6 +27,24 @@ const [postcode, setPostcode] = useState(() => {
     if (user.address) return user.address.postcode;
     else return null
 });
+
+  const handleImageUpload = async (data) => {
+       try{
+        const formdata=new FormData()
+        console.log(formdata,"njaaan");
+        formdata.append("image", data);
+        const response = await profileUpload(formdata);
+        console.log(response,"IMAGEURL");
+         if(response.success){
+          setProfilePic(response.data);
+          toast.success("profile picture uploaded");
+         }else{
+          throw new Error('profile picture upload failed !!');
+         }
+       }catch(err){
+        toast.error(err.message);
+       }
+  }
 
   const submit=async(data)=>{
       try{
@@ -61,13 +80,13 @@ const [postcode, setPostcode] = useState(() => {
       <div className="row" >
         <div className="col-md-5 border-right">
           <div className="d-flex flex-column align-items-center text-center p-3 py-5">
-            <img className="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg" alt="Profile" />
+            <img className="rounded-circle mt-5" width="150px" src={profilePic||`https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg`} alt="Profile" />
             <span className="font-weight-bold">{name}</span>
             <span className="text-black-50">{email}</span>
           </div>
             <div className="file btn btn-sm btn-primary rounded d-flex justify-content-center align-items-center">
              <span className="mr-5">Change photo</span>
-             <input type="file" id="file-input" />
+             <input type="file" id="file-input" onChange={(e) => handleImageUpload(e.target.files[0])} />
             </div>
 
         </div>
