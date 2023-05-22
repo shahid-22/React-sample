@@ -18,6 +18,9 @@ a{
     justify-content: space-around;
     height: 10vh;
     background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+    top: 0;
+    position: sticky;
+    z-index:100;
 }
 .nav__brand{
     text-transform: uppercase;

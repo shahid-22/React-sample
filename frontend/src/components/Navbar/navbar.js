@@ -1,6 +1,5 @@
 import React,{useState} from 'react';
 import {Link} from "react-router-dom"
-
 import "./navbar.css"
 function Navbar() {
     const [Active,setActive]=useState("nav__menu")
@@ -11,12 +10,13 @@ function Navbar() {
     };
   return (
    <nav className="nav">
-   <Link to={'#'} className="nav__brand">SHOPPIG-CART</Link>
+   <Link to={'/'} className="nav__brand">SHOPPIG-CART</Link>
    <ul className={Active}>
-    <li className="nav__item">< Link to={'#'} className="nav__linkl">Home</Link></li>
+    <li className="nav__item">< Link to={'/'} className="nav__linkl">Home</Link></li>
     <li className="nav__item"><Link to={'#'} className="nav__linkl">About</Link></li>
     <li className="nav__item"><Link to={'/profile'} className="nav__linkl">Profile</Link></li>
-    <li className="nav__item "><button  className="nav__linkl HII">user</button></li>
+    {/* <li className="nav__item "><button  className="nav__linkl HII">user</button></li> */}
+    <li className="nav__item"><Link to={'/login'} className="nav__linkl">Login</Link></li>
    </ul>
    <div onClick={navToggle} className={toggleicon}>
     <div className="line1"></div>
