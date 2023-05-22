@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import './signup.css';
 import {useForm} from "react-hook-form"
@@ -30,6 +30,12 @@ function Signup() {
             reset();
   }
   }
+  useEffect(()=>{
+    if(localStorage.getItem('token')){
+        navigate('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [])
   return (
     <Container>
       <Row>

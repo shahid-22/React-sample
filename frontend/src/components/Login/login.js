@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import {useNavigate} from 'react-router-dom'
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import {useForm} from 'react-hook-form'
@@ -20,7 +20,7 @@ function Login() {
       toast.success(response.message);
       localStorage.setItem('token', JSON.stringify(response.data));
       setTimeout(()=>{
-        navigate('/');
+        window.location.href="/"
        }, 2000);
     }
       else throw new Error(response.message);
@@ -28,6 +28,12 @@ function Login() {
     toast.error(err.message);
   }
   }
+  useEffect(()=>{
+    if(localStorage.getItem('token')){
+        navigate('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [])
   return (
     <Container>
       <Row>
