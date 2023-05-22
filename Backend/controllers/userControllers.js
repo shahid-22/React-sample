@@ -59,6 +59,37 @@ module.exports={
                 message: err.message
             })
         }
+    },
+    updateProfile:async(req,res)=>{
+        try {
+            req.body.address = {
+                address: req.body.address,
+                state: req.body.state,
+                postcode: req.body.postcode
+            }
+            User.updateOne({
+                _id: req.body.userId
+            }, {
+                name: req.body.name,
+                email: req.body.email,
+                mobile: req.body.mobile,
+                address: req.body.address
+            })
+                .then(() => {
+                    res.send({
+                        success: true,
+                        message: "user updated successfully"
+                    });
+                })
+                .catch((err) => {
+                    throw new Error(err.message);
+                })
+        } catch (err) {
+            res.send({
+                success: false,
+                message: err.message
+            });
+        }
     }
     
 }

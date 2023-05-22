@@ -21,7 +21,6 @@ function Navbar() {
     const validateToken =  async() => {
       try {
         const response=await GetCurrentUser();
-          console.log(response,"ffffffffffffffff");
           if(response.success){
              dispatch(usersFetchSuccess(response.data))
           }else{

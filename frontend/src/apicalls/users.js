@@ -25,10 +25,18 @@ export const LoginUser=async(payload)=>{
 export const GetCurrentUser =async ()=>{
     try{
       const response=await axiosInstance.get('/api/users/get-user-data');
-      console.log(response,"jjjjjjj");
       return response.data
     }catch(err){
         console.log(err);
+        return err.message
+    }
+}
+
+export const updateProfile=async (payload)=>{
+    try{
+   const response=await axiosInstance.post('/api/users/update-user-data',payload)
+       return response.data
+    }catch(err){
         return err.message
     }
 }

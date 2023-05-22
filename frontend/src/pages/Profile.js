@@ -1,14 +1,45 @@
-import React from 'react'
+import React,{useState} from 'react'
 import Navbar from '../components/Navbar/navbar'
 import "./profile.css"
 import { useSelector } from 'react-redux'
-// import {useForm} from "react-hook-form"
+import {useForm} from "react-hook-form"
+import { updateProfile } from '../apicalls/users'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function Profile() {
-  // const { handleSubmit, register, formState: { errors } } = useForm();
+  const { handleSubmit, register, formState: { errors } } = useForm();
   const user=useSelector(value=>value.users.users)
-  console.log("ddd",user);
+  const [name,setname]=useState(user.name)
+  const [email,setemail]=useState(user.email)
+  const [mobile, setMobile] = useState(user.mobile);
+  const [address,setaddress]=useState(()=>{
+    if(user.address)return user.address.address;
+    else return null
+  })
+  const [state, setState] = useState(() => {
+    if (user.address) return user.address.state;
+    else return null
+});
+const [postcode, setPostcode] = useState(() => {
+    if (user.address) return user.address.postcode;
+    else return null
+});
+
+  const submit=async(data)=>{
+      try{
+        console.log(data);
+        const response=await updateProfile(data)
+        if(response.success){
+          toast.success(response.message);
+        }else{
+          throw new Error('error occured !!!');
+        }
+      }catch(err){
+        toast.error(err.message)
+      }
+  }
   return (
     <>
     {/* Include the Bootstrap CSS */}
@@ -31,8 +62,8 @@ function Profile() {
         <div className="col-md-5 border-right">
           <div className="d-flex flex-column align-items-center text-center p-3 py-5">
             <img className="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg" alt="Profile" />
-            <span className="font-weight-bold">{user.name}</span>
-            <span className="text-black-50">{user.email}</span>
+            <span className="font-weight-bold">{name}</span>
+            <span className="text-black-50">{email}</span>
           </div>
             <div className="file btn btn-sm btn-primary rounded d-flex justify-content-center align-items-center">
              <span className="mr-5">Change photo</span>
@@ -45,41 +76,40 @@ function Profile() {
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h4 className="text-right">Profile Settings</h4>
             </div>
-            <form>
+            <form onSubmit={handleSubmit(submit)}>
             <div className="row mt-2">
-              <div className="col-md-6">
+              <div className="col-md-12">
                 <label className="labels">Name</label>
-                <input type="text" className="form-control" placeholder="first name" value="" />
-              </div>
-              <div className="col-md-6">
-                <label className="labels">Surname</label>
-                <input type="text" className="form-control" value="" placeholder="surname" />
+                <input type="text" {...register("name", { required: true })} className="form-control" onChange={(e) => setname(e.target.value)} placeholder="enter your name" value={name} />
+                {errors.name && <span style={{color:'red'}}>This field is required</span>}
               </div>
             </div>
             <div className="row mt-3">
               <div className="col-md-12">
                 <label className="labels">Email ID</label>
-                <input type="text" className="form-control" placeholder="enter email id" value="" />
+                <input type="text" {...register("email", { required: true })} className="form-control" onChange={(e) => setemail(e.target.value)} placeholder="enter email id" value={email} />
+                {errors.email && <span  style={{color:'red'}}>This field is required</span>}
               </div>
               <div className="col-md-12">
                 <label className="labels">Mobile Number</label>
-                <input type="text" className="form-control" placeholder="enter phone number" value="" />
+                <input type="text" {...register("mobile", { required: true, minLength: 10, maxLength: 10 })}  className="form-control" onChange={(e) => setMobile(e.target.value)} placeholder="enter phone number" value={mobile} />
+                {errors.mobile && <span  style={{color:'red'}}>you must be type 10-digit number</span>}
               </div>
               <div className="col-md-12">
                 <label className="labels">Address Line 1</label>
-                <input type="text" className="form-control" placeholder="enter address line 1" value="" />
+                <input type="text" {...register("address")} className="form-control" placeholder="enter address line " value={address} onChange={(e) => setaddress(e.target.value)} />
               </div>
               <div className="col-md-12">
                 <label className="labels">Postcode</label>
-                <input type="text" className="form-control" placeholder="enter address line 2" value="" />
+                <input type="text"  {...register("postcode")}  className="form-control" placeholder="post code" value={postcode} onChange={(e) => setPostcode(e.target.value)} />
               </div>
             </div>
             <div className="row mt-3">
-                    <div className="col-md-6"><label className="labels">Country</label><input type="text" className="form-control" placeholder="country" value=""/></div>
-                    <div className="col-md-6"><label className="labels">State/Region</label><input type="text" className="form-control" value="" placeholder="state"/></div>
+                    <div className="col-md-6"><label  className="labels">Country</label><input type="text" {...register("country")}  className="form-control" placeholder="country"/></div>
+                    <div className="col-md-6"><label  className="labels">State/Region</label><input type="text" {...register("state")}  className="form-control"  placeholder="state" value={state} onChange={(e) => setState(e.target.value)} /></div>
                 </div>
-                <div className="mt-5 text-center"><button className="btn btn-primary profile-button" type="button">Save Profile</button></div>
-
+                <div className="mt-5 text-center"><button className="btn btn-primary profile-button" type="submit">Save Profile</button></div>
+              <ToastContainer/>
                 </form>
             </div>
         </div>

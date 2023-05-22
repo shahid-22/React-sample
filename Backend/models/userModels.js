@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const addressSchema = new mongoose.Schema({
     address: String,
     state: String,
-    postcode: Number
+    country:String,
+    postcode:Number
 });
 
 const userSchema = new mongoose.Schema({
