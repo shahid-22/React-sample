@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from 'react'
+import React,{useEffect,useState,useRef} from 'react'
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -6,10 +6,23 @@ import {AdminUsersFetchSuccess,getUsers} from '../../redux/adminUsers/adminUsers
 import { useDispatch,useSelector} from 'react-redux';
 import { useForm } from 'react-hook-form'
 import { searchUsers } from '../../apicalls/admin';
+import { Form, Button } from 'react-bootstrap';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+import { Helmet } from 'react-helmet';
+import { RegisterUser } from '../../apicalls/users';
+
+
+
 function UserView() {
   const dispatch=useDispatch()
   const navigete=useNavigate()
   const { register: register2, handleSubmit: handleSubmit2, formState: {errors: errors2} } = useForm()
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const buttonRef = useRef(null);
+  const [Admin,setAdmin]=useState('Admin')
+
+
+
   const onSearchSubmit = async(data) => {
     try{
         console.log("dataaaaaaaaaaa",data);
@@ -29,7 +42,29 @@ function UserView() {
       toast.error(err.message)
     }
   }
-   const [Admin,setAdmin]=useState('Admin')
+
+
+  const onSubmit = async (data) => {
+    try {
+       console.log(data);
+       const response=await RegisterUser(data)
+       if (response.success) {
+        toast.success(response.message);
+        dispatch(getUsers());
+        buttonRef.current.click();
+        reset();
+    } else {
+        throw new Error(response.message);
+    }
+    } catch (err) {
+      toast.error(err.message);
+      reset();
+    }
+}
+
+
+
+
 useEffect(() => {
   if (localStorage.getItem('admintoken')){
       setAdmin(JSON.parse(localStorage.getItem('admin')));
@@ -39,6 +74,10 @@ useEffect(() => {
   }
   // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [])
+
+
+
+
 let users = useSelector(value => value.adminUsers.adminUsers);
 console.log(users);
 useEffect(() => {
@@ -48,8 +87,12 @@ useEffect(() => {
 
 
   return (
-    
     <>
+     <Helmet>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.min.js"></script>
+      </Helmet>
             <div style={{ backgroundColor: "#d3d2d9", height: '100px', marginBottom: '1rem', width: '100%' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
                 <div>
@@ -68,27 +111,66 @@ useEffect(() => {
 
             <div>
                 <section className="container " style={{ overflowX: 'hidden' }}>
-            
+                <div className="">
                         <div className='d-flex justify-content-center'>
                             <h1 className="mt-3 fw-bold border-bottom" style={{color:"#d3d2d9"}}>Manage Users</h1>
                         </div>
-                        {/* <button style={{marginLeft:"2%",backgroundColor:"#d3d2d9",borderRadius:'5px',cursor:'pointer'}} type="button" className="btn btn-lg btn-primary mt-2 d-flex ms-auto" data-bs-toggle="modal" data-bs-target="#exampleModal">Add User</button> */}
+                        <button style={{marginLeft:"2%",backgroundColor:"#d3d2d9",borderRadius:'5px',cursor:'pointer'}} type="button" data-toggle="modal" data-target="#exampleModal" className="btn btn-lg btn-primary mt-2 d-flex ms-auto" data-bs-toggle="modal" data-bs-target="#exampleModal">Add User</button>
                         {/* search */}
-                        <form   onSubmit={handleSubmit2(onSearchSubmit)}>
+                           {/* search */}
+                           <form onSubmit={handleSubmit2(onSearchSubmit)} >
                             <div className='d-flex'>
                                 <div className="input-group w-25">
-                                    <input type="text" {...register2("searchInput", { required: true})} className="form-control me-2 position-relative rounded-3"  style={{ backgroundColor: '#f2f2f2', border: 'none',marginLeft:'75%',width:'15em',height:'2em' ,borderRadius:'5px'}} placeholder="Search" />
+                                    <input type="text" className="form-control me-2 position-relative rounded-3" {...register2("searchInput", { required: true})} style={{ backgroundColor: '#f2f2f2', border: 'none' }} placeholder="Search" />
                                     <i className="ri-search-line position-absolute top-0 end-0 mt-1 text-muted me-3"></i>
-                                   
-
-                                     {errors2.searchInput && <p style={{color:'red',marginLeft:'76%'}}>Enter something to search</p>}
-                            
-                                  
                                 </div>
-                                     <button type='submit'  style={{marginLeft:"79%",marginTop:'1em',backgroundColor:'blue',color:'white',borderRadius:'5PX',width:'7em',height:'2em'}} >search</button>
+                                <button type='submit' className='btn btn-primary'>search</button>
                             </div>
+                            {errors2.searchInput && <p className='validationColor' style={{color:'red'}}>Enter something to search</p>}
                         </form>
-               
+                        {/* serch end */}
+                        {/* hhhh */}
+                   
+                        <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div className="modal-dialog modal-dialog-centered">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title" id="exampleModalLabel">Add User</h5>
+                                        <button type="button" className="btn-close" ref={buttonRef} data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <Form onSubmit={handleSubmit(onSubmit)}>
+                                        <div className="modal-body">
+                                            <Form.Group className="mb-3 mx-4" style={{ width: '80%' }} controlId="exampleForm.ControlInput1">
+                                                <Form.Label>Name</Form.Label>
+                                                <Form.Control type="text" {...register("name", { required: true })} placeholder="name" />
+                                                {errors.name && <span style={{color:'red'}}>This field is required</span>}
+                                            </Form.Group>
+                                            <Form.Group className="mb-3 mx-4" style={{ width: '80%' }} controlId="exampleForm.ControlInput1">
+                                                <Form.Label>Email</Form.Label>
+                                                <Form.Control type="email" {...register("email", { required: true })} placeholder="name@example.com" />
+                                                {errors.email && <span style={{color:'red'}}>This field is required</span>}
+                                            </Form.Group>
+                                            <Form.Group className="mb-3 mx-4" style={{ width: '80%' }} controlId="exampleForm.ControlTextarea1">
+                                                <Form.Label>Mobile</Form.Label>
+                                                <Form.Control {...register("mobile", { required: true, minLength: 10, maxLength: 10 })} type="number" placeholder="mobile" />
+                                                {errors.mobile && <span style={{color:'red'}}>This field is required and must be a 10-digit number</span>}
+                                            </Form.Group>
+                                            <Form.Group className="mb-3 mx-4" style={{ width: '80%' }} controlId="exampleForm.ControlTextarea1">
+                                                <Form.Label>Password</Form.Label>
+                                                <Form.Control type="password" {...register("password", { required: true, minLength: 8 })} placeholder="password" />
+                                                {errors.password && <span style={{color:'red'}}>This field is required and must be at least 8 characters long</span>}
+                                            </Form.Group>
+                                        </div>
+                                        <div className="modal-footer">
+                                            <Button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</Button>
+                                            <Button type='submit' className="btn btn-primary">Add User</Button>
+                                        </div>
+                                    </Form>
+                                </div>
+                            </div>
+                        </div>
+                        {/* hjghj */}
+                  </div>    
                     {/* users table */}
                     <div className="text-center mt-5">
                         <div className="row table-responsive col-lg-12" >
@@ -110,7 +192,7 @@ useEffect(() => {
                                           <th >{user.mobile}</th>
                                           <th >
                                           <button><i style={{ cursor: 'pointer',fontSize:'larger',fontWeight:'bolder',color:'blue' }} >edit</i></button>
-                                          <button className='ps-4'><i style={{ cursor: 'pointer',fontSize:'larger',fontWeight:'bolder' ,color:'red' }} >delete</i></button>
+                                          <button ><i style={{ cursor: 'pointer',fontSize:'larger',fontWeight:'bolder' ,color:'red' }} >delete</i></button>
                                            </th>
                                        </tr>
                                           )
@@ -122,6 +204,7 @@ useEffect(() => {
                     </div>
                 </section >
             </div >
+
         </>
   )
 }
