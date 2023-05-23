@@ -2,7 +2,10 @@ import React,{useEffect,useState} from 'react'
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {AdminUsersFetchSuccess,getUsers} from '../../redux/adminUsers/adminUsersAction'
+import { useDispatch,useSelector} from 'react-redux';
 function UserView() {
+  const dispatch=useDispatch()
   const navigete=useNavigate()
    const [Admin,setAdmin]=useState('Admin')
 useEffect(() => {
@@ -14,6 +17,13 @@ useEffect(() => {
   }
   // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [])
+let users = useSelector(value => value.adminUsers.adminUsers);
+console.log(users);
+useEffect(() => {
+  dispatch(getUsers());
+  // eslint-disable-next-line
+}, []);
+
   return (
     
     <>
@@ -65,16 +75,22 @@ useEffect(() => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                       <tr>
-                                          <th >fdgfdg</th>
-                                          <th >retetgregr</th>
-                                          <th >dfgdfrgfrfed</th>
+                                  {
+                                    users && users.map((user)=>{
+
+                                    
+                                    return(   <tr>
+                                          <th >{user.name}</th>
+                                          <th >{user.email}</th>
+                                          <th >{user.mobile}</th>
                                           <th >
                                           <span><i style={{ cursor: 'pointer',fontSize:'larger',fontWeight:'bolder',color:'blue' }} >edit/</i></span>
                                           <span className='ps-4'><i style={{ cursor: 'pointer',fontSize:'larger',fontWeight:'bolder' ,color:'red' }} >delete</i></span>
                                            </th>
                                        </tr>
-                                  
+                                    )
+                                       })
+}
                                 </tbody>
                             </table>
                         </div>

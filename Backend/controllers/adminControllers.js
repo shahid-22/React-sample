@@ -1,4 +1,5 @@
 const Admin=require('../models/adminModel')
+const User=require('../models/userModels')
 const jwt=require('jsonwebtoken')
 
 module.exports={
@@ -25,5 +26,20 @@ module.exports={
             });
         }
 
-    }
+    },
+    getAllUsers: async (req, res) => {
+        try {
+            const users = await User.find().exec();
+            res.send({
+                success: true,
+                message: "fetched all users",
+                users
+            })
+        } catch (err) {
+            res.send({
+                success: false,
+                message: err.message
+            })
+        }
+    },
 }

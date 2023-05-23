@@ -4,7 +4,7 @@ const adminControllers=require('../controllers/adminControllers')
 
 router.post('/login',adminControllers.login)
 
-
+router.get('/get-users',adminControllers.getAllUsers)
 
 
 
