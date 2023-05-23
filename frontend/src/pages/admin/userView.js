@@ -1,6 +1,6 @@
 import React,{useEffect,useState,useRef} from 'react'
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast ,ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {AdminUsersFetchSuccess,getUsers} from '../../redux/adminUsers/adminUsersAction'
 import { useDispatch,useSelector} from 'react-redux';
@@ -10,6 +10,8 @@ import { Form, Button } from 'react-bootstrap';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import { Helmet } from 'react-helmet';
 import { RegisterUser } from '../../apicalls/users';
+import { deleteUser } from "../../apicalls/admin"
+// import UserDeleteModal from '../../modal/UserDeleteModal';
 
 
 
@@ -20,7 +22,9 @@ function UserView() {
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const buttonRef = useRef(null);
   const [Admin,setAdmin]=useState('Admin')
-
+  const [modal,setmodal]=useState(false)
+  // const [showDeleteModal, setShowDeletModal] = useState(false);
+  // const [selectedItem, setItem] = useState(null);
 
 
   const onSearchSubmit = async(data) => {
@@ -62,6 +66,11 @@ function UserView() {
     }
 }
 
+// const handleDeleteModal = (user) => {
+//   console.log("hhiiiii",user);
+//   setItem(user);
+//   setShowDeletModal(true);
+// }
 
 
 
@@ -75,7 +84,24 @@ useEffect(() => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [])
 
+const handleDeleteUser = async (user) => {
+  try {
+      const response = await deleteUser(user._id);
+     
+      if (response.data.success) {
+        console.log(response);
+        toast.error(response.data.message);
+          dispatch(getUsers());
+          navigete('/admin')
+      } else {
+          throw new Error("user not deleted !!");
+      }
+  } catch (err) {
+      toast.error(err.message);
 
+  
+  }
+}
 
 
 let users = useSelector(value => value.adminUsers.adminUsers);
@@ -85,6 +111,10 @@ useEffect(() => {
   // eslint-disable-next-line
 }, []);
 
+const handlemodal=()=>{
+    setmodal(false);
+
+}
 
   return (
     <>
@@ -115,7 +145,7 @@ useEffect(() => {
                         <div className='d-flex justify-content-center'>
                             <h1 className="mt-3 fw-bold border-bottom" style={{color:"#d3d2d9"}}>Manage Users</h1>
                         </div>
-                        <button style={{marginLeft:"2%",backgroundColor:"#d3d2d9",borderRadius:'5px',cursor:'pointer'}} type="button" data-toggle="modal" data-target="#exampleModal" className="btn btn-lg btn-primary mt-2 d-flex ms-auto" data-bs-toggle="modal" data-bs-target="#exampleModal">Add User</button>
+                        <button style={{marginLeft:"2%",backgroundColor:"#d3d2d9",borderRadius:'5px',cursor:'pointer'}} type="button" onClick={()=>{setmodal(true)}} data-toggle="modal" data-target="#exampleModal" className="btn btn-lg btn-primary mt-2 d-flex ms-auto" data-bs-toggle="modal" data-bs-target="#exampleModal">Add User</button>
                         {/* search */}
                            {/* search */}
                            <form onSubmit={handleSubmit2(onSearchSubmit)} >
@@ -130,8 +160,8 @@ useEffect(() => {
                         </form>
                         {/* serch end */}
                         {/* hhhh */}
-                   
-                        <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                   {
+              modal &&    <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div className="modal-dialog modal-dialog-centered">
                                 <div className="modal-content">
                                     <div className="modal-header">
@@ -162,13 +192,14 @@ useEffect(() => {
                                             </Form.Group>
                                         </div>
                                         <div className="modal-footer">
-                                            <Button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</Button>
+                                            <Button type="button" onClick={handlemodal} className="btn btn-secondary" data-bs-dismiss="modal">Cancel</Button>
                                             <Button type='submit' className="btn btn-primary">Add User</Button>
                                         </div>
                                     </Form>
                                 </div>
                             </div>
                         </div>
+}  
                         {/* hjghj */}
                   </div>    
                     {/* users table */}
@@ -192,7 +223,7 @@ useEffect(() => {
                                           <th >{user.mobile}</th>
                                           <th >
                                           <button><i style={{ cursor: 'pointer',fontSize:'larger',fontWeight:'bolder',color:'blue' }} >edit</i></button>
-                                          <button ><i style={{ cursor: 'pointer',fontSize:'larger',fontWeight:'bolder' ,color:'red' }} >delete</i></button>
+                                          <button ><i style={{ cursor: 'pointer',fontSize:'larger',fontWeight:'bolder' ,color:'red' }}  onClick={()=>{handleDeleteUser(user)}}  >delete</i></button>
                                            </th>
                                        </tr>
                                           )
@@ -204,7 +235,9 @@ useEffect(() => {
                     </div>
                 </section >
             </div >
-
+            <ToastContainer/>
+            {/* {showDeleteModal && <UserDeletemodal user={selectedItem} modalVisibilty={setShowDeletModal} setItem={setItem} users={users} />} */}
+           {/* { showDeleteModal && <UserDeleteModal user={selectedItem} modalVisibilty={setShowDeletModal} setItem={setItem} />} */}
         </>
   )
 }

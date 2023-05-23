@@ -9,7 +9,7 @@ router.get('/get-users',adminControllers.getAllUsers)
 
 router.post('/searchUser',adminControllers.searchUsers)
 
-
+router.get('/delete-user/:id', adminControllers.deleteUser);
 
 
 module.exports=router;

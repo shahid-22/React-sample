@@ -32,3 +32,12 @@ export const searchUsers=async(payload)=>{
         return err.message;
     }
 }
+
+export const deleteUser=async(payload)=>{
+    try{
+        const response = await adminAxiosInstance.get(`/api/admin/delete-user/${payload}`);
+        return response;
+    }catch(err){
+        return err.message;
+    }
+}

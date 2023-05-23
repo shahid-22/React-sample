@@ -65,5 +65,24 @@ module.exports={
                 message: err.message
             })
         }
-    }
+    },
+    deleteUser: (req, res) => {
+        try {
+            User.deleteOne({ _id: req.params.id })
+                .then(() => {
+                    res.send({
+                        success: true,
+                        message: "user deleted successfully"
+                    });
+                })
+                .catch((err) => {
+                    throw new Error(err.message);
+                })
+        } catch (err) {
+            res.send({
+                success: false,
+                message: err.message
+            });
+        }
+    },
 }
