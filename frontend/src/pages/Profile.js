@@ -84,7 +84,6 @@ const [postcode, setPostcode] = useState(() => {
 
     useEffect(()=>{
       getuser();
-    
     },[]);
 
     useEffect(()=>{
@@ -104,7 +103,7 @@ const [postcode, setPostcode] = useState(() => {
                 if (user.address) return user.address.postcode;
                 else return null
             });
-    },[user]);
+    },[]);
 
   return (
     <>
