@@ -7,6 +7,7 @@ router.post('/login',adminControllers.login)
 router.get('/get-users',adminControllers.getAllUsers)
 
 
+router.post('/searchUser',adminControllers.searchUsers)
 
 
 

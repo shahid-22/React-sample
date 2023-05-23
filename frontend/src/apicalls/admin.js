@@ -21,3 +21,14 @@ export const GetUsers=async()=>{
         return err.message;
     }
 }
+
+
+
+export const searchUsers=async(payload)=>{
+    try{
+        const response = await adminAxiosInstance.post('/api/admin/searchUser', payload)
+        return response;
+    }catch(err){
+        return err.message;
+    }
+}

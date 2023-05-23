@@ -42,4 +42,28 @@ module.exports={
             })
         }
     },
+    searchUsers: async(req, res)=>{
+        try{
+            const users = await User.find({
+                $or:[
+                    {name: {$regex: new RegExp(req.body.searchInput, 'i')}},
+                    // {email: {$regex: new RegExp(req.body.searchInput, 'i')}},
+                    {mobile: {$regex: new RegExp(req.body.searchInput, 'i')}}
+                ]
+            }).exec();
+            if(!users) throw new Error("user now found !!!");
+            else{
+                res.send({
+                    success: true,
+                    message: "users found",
+                    users
+                });
+            }
+        }catch(err){
+            res.send({
+                sucess: false,
+                message: err.message
+            })
+        }
+    }
 }
