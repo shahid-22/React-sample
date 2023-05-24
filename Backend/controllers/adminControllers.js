@@ -85,4 +85,28 @@ module.exports={
             });
         }
     },
+    updateUser: (req, res) => {
+        try {
+            User.updateOne({_id: req.body.data.editId},
+                {
+                    name: req.body.data.editName,
+                    email: req.body.data.editEmail,
+                    mobile: req.body.data.editMobile
+                })
+            .then(()=>{
+                res.send({
+                    success: true,
+                    message: "user updated"
+                });
+            })
+            .catch((err)=>{
+                throw new Error(err.message);
+            })
+        } catch (err) {
+            res.send({
+                success: false,
+                message: err.message
+            })
+        }
+    },
 }

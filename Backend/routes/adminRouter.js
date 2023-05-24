@@ -11,5 +11,5 @@ router.post('/searchUser',adminControllers.searchUsers)
 
 router.get('/delete-user/:id', adminControllers.deleteUser);
 
-
+router.post('/update-user',adminControllers.updateUser)
 module.exports=router;

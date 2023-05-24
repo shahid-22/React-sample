@@ -41,3 +41,14 @@ export const deleteUser=async(payload)=>{
         return err.message;
     }
 }
+
+export const updateUserPost=async(payload)=>{
+    try{
+        const response = await adminAxiosInstance.post('/api/admin/update-user', {
+            data: payload
+        });
+        return response;
+    }catch(err){
+        return err.message;
+    }
+}
