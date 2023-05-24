@@ -6,34 +6,39 @@ import {LoginUser} from "../../apicalls/users"
 import { ToastContainer } from 'react-toastify'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+
+
+
 function Login() {
   const navigate=useNavigate()
   const {register, handleSubmit,formState:{errors},}  = useForm();
   const onsubmit=async (data)=>{
     try{
-
-    
-    console.log(data);
-    const response=await LoginUser(data)
-    console.log(response,'response');
-    if(response.success){
+      const response=await LoginUser(data)
+      if(response.success){
       toast.success(response.message);
       localStorage.setItem('token', JSON.stringify(response.data));
       setTimeout(()=>{
         window.location.href="/"
        }, 2000);
-    }
+     }
       else throw new Error(response.message);
   }catch(err){
     toast.error(err.message);
   }
   }
+
+
   useEffect(()=>{
     if(localStorage.getItem('token')){
         navigate('/');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [])
+
+
+
   return (
     <Container>
       <Row>

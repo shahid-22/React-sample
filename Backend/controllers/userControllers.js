@@ -5,6 +5,8 @@ const cloudinary=require('../config/cloudinaryconfig')
 module.exports={
     userSignup: async (req ,res) => {
         try{
+         const userExist = await User.findOne({ email: req.body.email });
+         if (userExist) throw new Error("User Exists, Login please");
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(req.body.password, salt);
         req.body.password = hashedPassword;

@@ -7,35 +7,42 @@ import {RegisterUser} from '../../apicalls/users'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
+
+
 function Signup() {
   const navigate=useNavigate()
   const {register, handleSubmit, formState:{errors}, watch,reset} = useForm();
-
   const submit=async(data)=>{
     try{
       const response= await RegisterUser(data)
-
       if(response.success){
         toast.success(response.message);
            setTimeout(()=>{
             navigate('/login');
            }, 2000);
       }else{
-
          throw new Error(response.message);
       }
-
     }catch(err){
       toast.error(err.message);
             reset();
+    }
   }
-  }
+
+
+
+
   useEffect(()=>{
     if(localStorage.getItem('token')){
         navigate('/');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [])
+
+
+
+
   return (
     <Container>
       <Row>

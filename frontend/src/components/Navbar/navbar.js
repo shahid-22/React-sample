@@ -6,11 +6,12 @@ import {useDispatch,useSelector } from 'react-redux';
 import {GetCurrentUser} from '../../apicalls/users'
 import "./navbar.css"
 import { usersFetchFailure, usersFetchSuccess } from '../../redux/users/usersAction';
+
+
+
 function Navbar() {
   const user = useSelector(value => value.users.users);
   const dispatch=useDispatch()
-  // console.log(dispatch);
-  // console.log("user",user);
   const navigate=useNavigate()
     const [Active,setActive]=useState("nav__menu")
     const [toggleicon,settoggleicon]=useState("nav__toggler")
@@ -18,6 +19,9 @@ function Navbar() {
         Active==="nav__menu"?setActive("nav__menu nav__active"):setActive("nav__menu")
         toggleicon==="nav__toggler"? settoggleicon("nav__toggler toggle"):settoggleicon("nav__toggler")
     };
+
+
+
     const validateToken =  async() => {
       try {
         const response=await GetCurrentUser();
@@ -33,7 +37,10 @@ function Navbar() {
             toast.error(err.message);
             navigate('/login');
       } 
-  }
+    }
+
+
+
     useEffect(()=>{
       if(localStorage.getItem('token')) validateToken();
       else{
@@ -41,10 +48,15 @@ function Navbar() {
             navigate('/login');
       }
     })
+
+
     const logout=()=>{
       localStorage.removeItem('token');
       navigate('/login');
     }
+
+
+    
   return (
    <nav className="nav">
    <Link to={'/'} className="nav__brand">SHOPPIG-CART</Link>

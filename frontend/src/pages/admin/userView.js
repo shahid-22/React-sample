@@ -11,106 +11,86 @@ import { Form, Button } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { RegisterUser } from '../../apicalls/users';
 import { deleteUser } from "../../apicalls/admin"
-// import UserEditModal from '../../modal/UserEditModal';
-// import UserDeleteModal from '../../modal/UserDeleteModal';
+import UserEditModal from '../../modal/UserEditModal';
+import { FaChevronRight } from 'react-icons/fa';
 
 
 
 
 function UserView() {
 
-  // edit options
-  const editModalShow = useRef();
 
-  const dispatch = useDispatch()
-  const navigete = useNavigate()
-  const { register: register2, handleSubmit: handleSubmit2, formState: { errors: errors2 } } = useForm()
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
-  const { register: register3, handleSubmit: handleSubmit3, formState: { errors: errors3 } } = useForm()
-  const buttonRef = useRef(null);
-  const [Admin, setAdmin] = useState('Admin')
-  const [modal, setmodal] = useState(false)
-  const [selectedItem, setItem] = useState(null);
-  // const [showEditModal, setShowEditModal] = useState(false);
-
-
-
+     const dispatch = useDispatch()
+     const navigete = useNavigate()
+     const { register: register2, handleSubmit: handleSubmit2, formState: { errors: errors2 } } = useForm()
+     const { register, handleSubmit, formState: { errors }, reset } = useForm();
+     const buttonRef = useRef(null);
+     const [Admin, setAdmin] = useState('Admin')
+     const [modal, setmodal] = useState(false)
+     const [selectedItem, setItem] = useState(null);
+     const [showEditModal, setShowEditModal] = useState(false);
 
 
 
 
   const onSearchSubmit = async (data) => {
     try {
-      console.log("dataaaaaaaaaaa", data);
-      const response = await searchUsers(data)
-      if (response.data.success) {
-        if (response.data.users.length >= 1) {
-          dispatch(AdminUsersFetchSuccess(response.data.users));
-        } else {
-          dispatch(getUsers());
-          throw new Error("No users Found");
+         const response = await searchUsers(data)
+         if (response.data.success) {
+              if (response.data.users.length >= 1) {
+                 dispatch(AdminUsersFetchSuccess(response.data.users));
+                 } else {
+                 dispatch(getUsers());
+                 throw new Error("No users Found");
+                 }
+            } else {
+                throw new Error(response.data.message);
+            }
+        } catch (err) {
+           toast.error(err.message)
         }
-      } else {
-        throw new Error(response.data.message);
-      }
-    } catch (err) {
-      console.log(err);
-      toast.error(err.message)
-    }
-  }
+     }
 
-  const onSubmit = async (data) => {
-    try {
-      console.log(data);
-      const response = await RegisterUser(data)
-      if (response.success) {
-        toast.success(response.message);
-        dispatch(getUsers());
-        buttonRef.current.click();
+
+
+
+
+    const onSubmit = async (data) => {
+      try {
+         const response = await RegisterUser(data)
+         if (response.success) {
+          toast.success(response.message);
+          dispatch(getUsers());
+          buttonRef.current.click();
+          reset();
+        } else {
+          throw new Error(response.message);
+        }
+      } catch (err) {
+        toast.error(err.message);
         reset();
-      } else {
-        throw new Error(response.message);
       }
-    } catch (err) {
-      toast.error(err.message);
-      reset();
     }
-  }
-
-
-  const handleUpdate = (data) => {
-    try{
-    console.log("kkkkkkkkkkk");
-    console.log(data);
-  
-    }catch(err){
-      console.log(err);
-    }
-  }
 
 
 
 
-
-
-  useEffect(() => {
-    if (localStorage.getItem('admintoken')) {
-      setAdmin(JSON.parse(localStorage.getItem('admin')));
-    } else {
-      toast.error("please login to continue");
-      navigete('/admin/login');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    useEffect(() => {
+      if (localStorage.getItem('admintoken')) {
+        setAdmin(JSON.parse(localStorage.getItem('admin')));
+      } else {
+        toast.error("please login to continue");
+        navigete('/admin/login');
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
 
 
   const handleDeleteUser = async (user) => {
     try {
       const response = await deleteUser(user._id);
-
       if (response.data.success) {
-        console.log(response);
         toast.error(response.data.message);
         dispatch(getUsers());
         navigete('/admin')
@@ -119,18 +99,19 @@ function UserView() {
       }
     } catch (err) {
       toast.error(err.message);
-
-
     }
   }
 
 
+
+
   let users = useSelector(value => value.adminUsers.adminUsers);
-  console.log(users);
+
   useEffect(() => {
     dispatch(getUsers());
     // eslint-disable-next-line
   }, []);
+
 
   const handlemodal = () => {
     setmodal(false);
@@ -139,20 +120,9 @@ function UserView() {
 
 
   const handleEditUser = (user) => {
-    console.log(user, "user");
     setItem(user);
+    setShowEditModal(true)
   }
-  const [editName, setEditName] = useState('');
-  const [editEmail, setEditEmail] = useState('');
-  const [editMobile, setEditMobile] = useState('');
-
-  useEffect(() => {
-    setEditName(selectedItem?.name);
-    setEditEmail(selectedItem?.email)
-    setEditMobile(selectedItem?.mobile)
-    // eslint-disable-next-line
-  }, [selectedItem]);
-
 
 
 
@@ -174,7 +144,7 @@ function UserView() {
               localStorage.removeItem('admintoken');
               localStorage.removeItem('admin');
               navigete('/admin/login');
-            }} type="button" className="btn btn-primary" style={{ cursor: 'pointer', backgroundColor: 'black', color: 'white' }}>{Admin.name} > </button>
+            }} type="button" className="btn btn-primary" style={{ cursor: 'pointer', backgroundColor: 'black', color: 'white' }}>{Admin.name} <FaChevronRight /> </button>
           </div>
         </div>
       </div>
@@ -265,11 +235,6 @@ function UserView() {
                         <th >
                           <button><i style={{ cursor: 'pointer', fontSize: 'larger', fontWeight: 'bolder', color: 'blue' }} onClick={() => {
                             handleEditUser(user)
-                            // setEditName(user.name);
-                            // setEditEmail(user.email)
-                            // setEditMobile(user.mobile)
-                            editModalShow.current.click();
-
                           }}  >edit</i></button>
                           <button ><i style={{ cursor: 'pointer', fontSize: 'larger', fontWeight: 'bolder', color: 'red' }} onClick={() => { handleDeleteUser(user) }}  >delete</i></button>
                         </th>
@@ -284,38 +249,8 @@ function UserView() {
         </section >
       </div >
       <div>
-
-        <button type="button" ref={editModalShow} className="btn btn-primary d-none" data-toggle="modal" data-target="#exampleModal"></button>
-
-        <div className="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <form onSubmit={handleSubmit3(handleUpdate)}>
-                  <div className="row mt-2">
-                    <div className="col-md-12"><label className="labels">Name</label><input type="text" {...register3("editName", {required: true})} value={editName} onChange={(e) => setEditName(e.target.value)} className="form-control" placeholder="Name" /></div>
-                    {errors3.editName && <span style={{ color: 'red' }}>No change occured</span>}
-                  </div>
-                  <div className="row">
-                    <div className="col-md-12 mt-3"><label className="labels">Email ID</label><input type="text" {...register3("editEmail", {required: true})} className="form-control" placeholder="enter email id" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} /></div>
-                    {errors3.editEmail && <span style={{ color: 'red' }}>No change occured</span>}
-                    <div className="col-md-12 mt-3"><label className="labels">Mobile Number</label><input type="text" {...register3("editMobile", {required: true})} className="form-control" placeholder="enter phone number" value={editMobile} onChange={(e) => setEditMobile(e.target.value)} /></div>
-                    {errors3.editMobile && <span style={{ color: 'red' }}>No change occured</span>}
-                  </div>
-                  <div className="mt-5 text-center"><button className="btn btn-primary profile-button" type="submit">Save Changes</button></div>
-                </form>
-              </div>
-
-            </div>
-          </div>
-        </div>
       </div>
+      {showEditModal &&<UserEditModal user={selectedItem} modalVisibilty={setShowEditModal}/>}
       <ToastContainer />
     </>
   )
