@@ -61,7 +61,7 @@ function UserView() {
          if (response.success) {
           toast.success(response.message);
           dispatch(getUsers());
-          buttonRef.current.click();
+          // buttonRef.current.click();
           reset();
         } else {
           throw new Error(response.message);

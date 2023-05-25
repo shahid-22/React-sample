@@ -47,7 +47,7 @@ function Navbar() {
         toast.error("please login to continue");
             navigate('/login');
       }
-    })
+    },[])
 
 
     const logout=()=>{
