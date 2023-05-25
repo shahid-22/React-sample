@@ -14,8 +14,6 @@ export const LoginUser=async(payload)=>{
     try{
         console.log(payload);
         const response = await axiosInstance.post('/api/users/login', payload);
-        console.log("response");
-        console.log(response);
         return response.data;
     }catch(err){
         return err.message;
@@ -27,7 +25,6 @@ export const GetCurrentUser =async ()=>{
       const response=await axiosInstance.get('/api/users/get-user-data');
       return response.data
     }catch(err){
-        console.log(err);
         return err.message
     }
 }
